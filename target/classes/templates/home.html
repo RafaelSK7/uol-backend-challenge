@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Formulário de Cadastro</title>
+</head>
+
+<body>
+<h1>Formulário de Cadastro</h1>
+
+<form id="cadastro-form">
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" required><br><br>
+
+    <label for="email">E-mail:</label>
+    <input type="email" id="email" name="email" required><br><br>
+
+    <label for="telefone">Telefone:</label>
+    <input type="tel" id="telefone" name="telefone"><br><br>
+
+    <label>Quero ser do grupo:</label>
+    <input type="radio" id="justice" name="groupType" value="JUSTICE_LEAGUE">
+    <label for="justice">Liga da Justiça</label>
+
+    <input type="radio" id="avangers" name="groupType" value="AVANGERS">
+    <label for="avangers">Os Vingadores</label><br><br>
+
+    <button type="button" id="cadastrar" onclick="cadastrar()">Cadastrar</button>
+    <button type="button" id="listar" onclick="carregarListaCadastros()">Listar Cadastrados</button>
+</form>
+
+<div id="lista-cadastrados">
+    <!-- Aqui você pode exibir a lista de cadastrados -->
+</div>
+
+<script>
+    document.getElementById("cadastrar").addEventListener("click", function () {
+        const name = document.getElementById("nome").value;
+        const email = document.getElementById("email").value;
+        const phoneNumber = document.getElementById("telefone").value;
+        const groupType = document.querySelector('input[name="groupType"]:checked').value;
+
+        const dados = {
+            name: name,
+            email: email,
+            phoneNumber: phoneNumber,
+            groupType: groupType
+        };
+
+        cadastrar(dados);
+    });
+
+    const url = "/players";
+
+    function cadastrar(dados) {
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dados)
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Lógica para tratar a resposta do servidor, se necessário
+                console.log(data);
+            })
+            .catch(error => {
+                // Lógica para tratar erros, se necessário
+                console.error(error);
+            });
+    }
+
+    function carregarListaCadastros() {
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Manipule os dados e exiba na página
+                const listaCadastros = document.getElementById("lista-cadastrados");
+                listaCadastros.innerHTML = ""; // Limpa a lista
+                data.forEach(pessoa => {
+                    const item = document.createElement("li");
+                    item.textContent = `Nome: ${pessoa.name}, E-mail: ${pessoa.email},
+                    Telefone: ${pessoa.phoneNumber},Codiname: ${pessoa.codiname}, Grupo: ${pessoa.groupType}`;
+                    listaCadastros.appendChild(item);
+                });
+            })
+            .catch(error => {
+                // Lide com erros, se houver algum
+                console.error(error);
+            });
+    }
+</script>
+</body>
+
+</html>
